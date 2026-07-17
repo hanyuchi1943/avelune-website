@@ -85,6 +85,31 @@ function inquiryHtml(fields: Array<[string, string]>) {
 </html>`;
 }
 
+function confirmationHtml(name: string) {
+  return `<!doctype html>
+<html lang="en">
+  <body style="margin:0;padding:32px 16px;background:#f4f0e9;color:#26231f;">
+    <main style="max-width:680px;margin:0 auto;background:#fffdf9;border:1px solid #e7e0d6;">
+      <header style="padding:34px 40px 28px;border-bottom:1px solid #e7e0d6;">
+        <p style="margin:0 0 18px;color:#7d7468;font:11px/1.4 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;">Inquiry received</p>
+        <h1 style="margin:0;color:#26231f;font:400 30px/1.2 Georgia,serif;letter-spacing:-.02em;">AVELUNE</h1>
+      </header>
+      <section style="padding:34px 40px 40px;color:#26231f;font:16px/1.75 Georgia,serif;">
+        <p style="margin:0 0 22px;">Dear ${escapeHtml(name)},</p>
+        <p style="margin:0 0 22px;">Thank you for contacting AVELUNE.</p>
+        <p style="margin:0 0 22px;">We&apos;ve received your inquiry safely.</p>
+        <p style="margin:0 0 22px;">Every keepsake begins with a story, and we&apos;re honored that you&apos;ve chosen to share yours.</p>
+        <p style="margin:0 0 30px;">We&apos;ll review everything personally and reply within one business day.</p>
+        <p style="margin:0;">Warmly,<br>The AVELUNE Studio</p>
+      </section>
+      <footer style="padding:18px 40px;background:#f4f0e9;color:#7d7468;font:12px/1.5 Arial,sans-serif;">
+        A quiet place for their love to stay.
+      </footer>
+    </main>
+  </body>
+</html>`;
+}
+
 export async function POST(request: NextRequest) {
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.INQUIRY_TO_EMAIL;
@@ -137,21 +162,21 @@ export async function POST(request: NextRequest) {
     if (!apiKey) {
       console.log("missing RESEND_API_KEY");
       return NextResponse.json(
-        { error: "Server configuration missing: RESEND_API_KEY.", missing: ["RESEND_API_KEY"] },
+        { error: "We could not send your inquiry right now. Please try again later." },
         { status: 500 },
       );
     }
     if (!to) {
       console.log("missing INQUIRY_TO_EMAIL");
       return NextResponse.json(
-        { error: "Server configuration missing: INQUIRY_TO_EMAIL.", missing: ["INQUIRY_TO_EMAIL"] },
+        { error: "We could not send your inquiry right now. Please try again later." },
         { status: 500 },
       );
     }
     if (!from) {
       console.log("missing INQUIRY_FROM_EMAIL");
       return NextResponse.json(
-        { error: "Server configuration missing: INQUIRY_FROM_EMAIL.", missing: ["INQUIRY_FROM_EMAIL"] },
+        { error: "We could not send your inquiry right now. Please try again later." },
         { status: 500 },
       );
     }
@@ -171,7 +196,7 @@ export async function POST(request: NextRequest) {
 
     try {
       console.log("about to call Resend");
-      const response = await fetch("https://api.resend.com/emails", {
+      const internalResponse = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${apiKey}`,
@@ -187,23 +212,64 @@ export async function POST(request: NextRequest) {
         }),
       });
 
-      if (!response.ok) {
-        const responseBody = await response.text();
-        console.error("AVELUNE Resend request rejected", {
-          status: response.status,
-          responseBody,
-        });
+      if (!internalResponse.ok) {
+        console.error("AVELUNE internal inquiry email rejected", { status: internalResponse.status });
         console.log("Resend rejected inquiry delivery");
         return NextResponse.json(
-          { error: `Resend rejected the inquiry delivery (HTTP ${response.status}): ${responseBody || "No response body."}` },
+          { error: "We could not send your inquiry right now. Please try again later." },
           { status: 502 },
         );
+      }
+
+      const confirmationText = `Dear ${name},
+
+Thank you for contacting AVELUNE.
+
+We've received your inquiry safely.
+
+Every keepsake begins with a story, and we're honored that you've chosen to share yours.
+
+We'll review everything personally and reply within one business day.
+
+Warmly,
+
+The AVELUNE Studio`;
+
+      try {
+        console.log("about to send inquiry confirmation");
+        const confirmationResponse = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from,
+            to: [email],
+            subject: "We've received your inquiry | AVELUNE",
+            text: confirmationText,
+            html: confirmationHtml(name),
+          }),
+        });
+
+        if (!confirmationResponse.ok) {
+          console.error("AVELUNE inquiry confirmation email rejected", {
+            status: confirmationResponse.status,
+          });
+        }
+      } catch (error) {
+        console.error("AVELUNE inquiry confirmation email failed", {
+          message: errorMessage(error),
+        });
       }
     } catch (error) {
       const message = errorMessage(error);
       console.error("AVELUNE Resend request failed", { message });
       console.log("Resend request failed");
-      return NextResponse.json({ error: `Resend request failed: ${message}` }, { status: 502 });
+      return NextResponse.json(
+        { error: "We could not send your inquiry right now. Please try again later." },
+        { status: 502 },
+      );
     }
 
     return NextResponse.json({ success: true });
@@ -211,7 +277,10 @@ export async function POST(request: NextRequest) {
     const message = errorMessage(error);
     console.error("AVELUNE inquiry route failed", { message });
     console.log("inquiry route failed");
-    return NextResponse.json({ error: `Inquiry processing failed: ${message}` }, { status: 500 });
+    return NextResponse.json(
+      { error: "We could not send your inquiry right now. Please try again later." },
+      { status: 500 },
+    );
   }
 }
 

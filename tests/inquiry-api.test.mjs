@@ -10,10 +10,12 @@ test("inquiry API has the required production safeguards", () => {
   assert.match(source, /INQUIRY_TO_EMAIL/);
   assert.match(source, /INQUIRY_FROM_EMAIL/);
   assert.match(source, /resendApiKey: apiKey \? "present" : "missing"/);
-  assert.match(source, /Server configuration missing:/);
   assert.match(source, /reply_to: email/);
   assert.match(source, /subject: "New Custom Memorial Inquiry \| AVELUNE"/);
   assert.match(source, /html: inquiryHtml\(fields\)/);
+  assert.match(source, /subject: "We've received your inquiry \| AVELUNE"/);
+  assert.match(source, /html: confirmationHtml\(name\)/);
+  assert.match(source, /about to send inquiry confirmation/);
   assert.match(source, /\["Personalization request",/);
   assert.match(source, /\["Submission time", submittedAt\]/);
   assert.match(source, /payload\.website/);
