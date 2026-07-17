@@ -1,13 +1,8 @@
-import { env } from "cloudflare:workers";
-import { drizzle } from "drizzle-orm/d1";
-import * as schema from "./schema";
-
-export function getDb() {
-  if (!env.DB) {
-    throw new Error(
-      "Cloudflare D1 binding `DB` is unavailable. Set the `d1` field in .openai/hosting.json to `DB` or let your control plane inject the real binding values before using the database."
-    );
-  }
-
-  return drizzle(env.DB, { schema });
+/**
+ * The public AVELUNE site has no database dependency. This deliberate stub
+ * keeps the former template module import-safe in standard Next.js builds.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- legacy template examples are intentionally disabled in the public site.
+export function getDb(): any {
+  throw new Error("The public AVELUNE website does not use a database.");
 }

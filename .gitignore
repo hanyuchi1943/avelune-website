@@ -43,6 +43,7 @@ next-env.d.ts
 
 node_modules/
 .next/
+# Local build output only. The production build does not depend on this folder.
 build/
 .env
 .env.local
