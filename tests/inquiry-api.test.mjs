@@ -17,5 +17,8 @@ test("inquiry API has the required production safeguards", () => {
   assert.match(source, /status: 429/);
   assert.match(source, /emailPattern\.test\(email\)/);
   assert.match(source, /status: 405/);
-  assert.doesNotMatch(source, /console\.log/);
+  assert.match(source, /console\.log\("missing RESEND_API_KEY"\)/);
+  assert.match(source, /console\.log\("missing INQUIRY_TO_EMAIL"\)/);
+  assert.match(source, /console\.log\("missing INQUIRY_FROM_EMAIL"\)/);
+  assert.match(source, /console\.log\("about to call Resend"\)/);
 });

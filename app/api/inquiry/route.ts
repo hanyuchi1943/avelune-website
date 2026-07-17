@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
 
   try {
     if (!allowed(request)) {
+      console.log("inquiry rate limited");
       return NextResponse.json({ error: "Please wait a moment before trying again." }, { status: 429 });
     }
 
@@ -62,15 +63,18 @@ export async function POST(request: NextRequest) {
     try {
       payload = await request.json();
     } catch {
+      console.log("invalid inquiry request");
       return NextResponse.json({ error: "Invalid request." }, { status: 400 });
     }
 
     if (clean(payload.website, 200)) {
+      console.log("inquiry honeypot triggered");
       return NextResponse.json({ error: "Unable to process this inquiry." }, { status: 400 });
     }
 
     const startedAt = Number(payload.startedAt);
     if (!Number.isFinite(startedAt) || Date.now() - startedAt < 2500) {
+      console.log("inquiry completed too quickly");
       return NextResponse.json({ error: "Please take a moment to complete the form." }, { status: 400 });
     }
 
@@ -80,21 +84,31 @@ export async function POST(request: NextRequest) {
     const message = clean(payload.message, 4000);
 
     if (!name || !emailPattern.test(email) || !country || !message) {
+      console.log("inquiry validation failed");
       return NextResponse.json(
         { error: "Please complete your name, email, country, and message." },
         { status: 400 },
       );
     }
 
-    const missing = [
-      !apiKey && "RESEND_API_KEY",
-      !to && "INQUIRY_TO_EMAIL",
-      !from && "INQUIRY_FROM_EMAIL",
-    ].filter(Boolean);
-
-    if (missing.length) {
+    if (!apiKey) {
+      console.log("missing RESEND_API_KEY");
       return NextResponse.json(
-        { error: `Server configuration missing: ${missing.join(", ")}.`, missing },
+        { error: "Server configuration missing: RESEND_API_KEY.", missing: ["RESEND_API_KEY"] },
+        { status: 500 },
+      );
+    }
+    if (!to) {
+      console.log("missing INQUIRY_TO_EMAIL");
+      return NextResponse.json(
+        { error: "Server configuration missing: INQUIRY_TO_EMAIL.", missing: ["INQUIRY_TO_EMAIL"] },
+        { status: 500 },
+      );
+    }
+    if (!from) {
+      console.log("missing INQUIRY_FROM_EMAIL");
+      return NextResponse.json(
+        { error: "Server configuration missing: INQUIRY_FROM_EMAIL.", missing: ["INQUIRY_FROM_EMAIL"] },
         { status: 500 },
       );
     }
@@ -112,6 +126,7 @@ export async function POST(request: NextRequest) {
     ];
 
     try {
+      console.log("about to call Resend");
       const response = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -133,6 +148,7 @@ export async function POST(request: NextRequest) {
           status: response.status,
           responseBody,
         });
+        console.log("Resend rejected inquiry delivery");
         return NextResponse.json(
           { error: `Resend rejected the inquiry delivery (HTTP ${response.status}): ${responseBody || "No response body."}` },
           { status: 502 },
@@ -141,6 +157,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       const message = errorMessage(error);
       console.error("AVELUNE Resend request failed", { message });
+      console.log("Resend request failed");
       return NextResponse.json({ error: `Resend request failed: ${message}` }, { status: 502 });
     }
 
@@ -148,6 +165,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const message = errorMessage(error);
     console.error("AVELUNE inquiry route failed", { message });
+    console.log("inquiry route failed");
     return NextResponse.json({ error: `Inquiry processing failed: ${message}` }, { status: 500 });
   }
 }
