@@ -9,7 +9,6 @@ Create a local `.env.local` file (never commit it):
 ```bash
 RESEND_API_KEY=re_xxxxxxxxx
 INQUIRY_TO_EMAIL=hello@avelune.com
-# Optional: use a verified Resend sender before launch
 INQUIRY_FROM_EMAIL="AVELUNE <hello@your-verified-domain.com>"
 ```
 
@@ -27,7 +26,7 @@ Visit `/contact`. Fill the required fields, wait at least three seconds, and sub
 1. In Vercel, open the project’s **Settings → Environment Variables**.
 2. Add `RESEND_API_KEY` with the Resend API key.
 3. Add `INQUIRY_TO_EMAIL` with `hello@avelune.com` or the final recipient.
-4. Add `INQUIRY_FROM_EMAIL` only after verifying the sending domain in Resend; otherwise the safe development sender is used.
+4. Add `INQUIRY_FROM_EMAIL` using a sender domain verified in Resend.
 5. Apply variables to Production, Preview, and Development as required, then redeploy.
 
 ## Inquiry protection

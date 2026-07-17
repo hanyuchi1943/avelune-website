@@ -8,6 +8,9 @@ test("inquiry API has the required production safeguards", () => {
   assert.match(source, /export async function POST/);
   assert.match(source, /RESEND_API_KEY/);
   assert.match(source, /INQUIRY_TO_EMAIL/);
+  assert.match(source, /INQUIRY_FROM_EMAIL/);
+  assert.match(source, /resendApiKey: apiKey \? "present" : "missing"/);
+  assert.match(source, /Server configuration missing:/);
   assert.match(source, /reply_to: email/);
   assert.match(source, /payload\.website/);
   assert.match(source, /Date\.now\(\) - startedAt < 2500/);

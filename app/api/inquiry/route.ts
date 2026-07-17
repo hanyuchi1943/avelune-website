@@ -21,11 +21,30 @@ export async function POST(request: NextRequest) {
   const startedAt = Number(payload.startedAt); if (!Number.isFinite(startedAt) || Date.now() - startedAt < 2500) return NextResponse.json({ error: "Please take a moment to complete the form." }, { status: 400 });
   const name = clean(payload.name, 120), email = clean(payload.email, 180), country = clean(payload.country, 120), message = clean(payload.message, 4000);
   if (!name || !emailPattern.test(email) || !country || !message) return NextResponse.json({ error: "Please complete your name, email, country, and message." }, { status: 400 });
-  const apiKey = process.env.RESEND_API_KEY, to = process.env.INQUIRY_TO_EMAIL || "hello@avelune.com";
-  if (!apiKey) return NextResponse.json({ error: "We could not send your inquiry right now. Please try again or contact us directly by email." }, { status: 503 });
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = process.env.INQUIRY_TO_EMAIL;
+  const from = process.env.INQUIRY_FROM_EMAIL;
+  const missing = [
+    !apiKey && "RESEND_API_KEY",
+    !to && "INQUIRY_TO_EMAIL",
+    !from && "INQUIRY_FROM_EMAIL",
+  ].filter(Boolean);
+
+  console.info("AVELUNE inquiry email configuration", {
+    resendApiKey: apiKey ? "present" : "missing",
+    inquiryToEmail: to ?? "missing",
+    inquiryFromEmail: from ?? "missing",
+  });
+
+  if (missing.length) {
+    return NextResponse.json(
+      { error: `Server configuration missing: ${missing.join(", ")}.`, missing },
+      { status: 500 },
+    );
+  }
   const fields = [["Full name", name], ["Customer email", email], ["Country", country], ["Pet name", clean(payload.petName, 120) || "—"], ["Pet type", clean(payload.petType, 120) || "—"], ["Personalization", clean(payload.personalisation, 200) || "—"], ["Message", message], ["Submitted", new Date().toISOString()], ["Page URL", clean(payload.pageUrl, 500) || "—"]];
   try {
-    const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: process.env.INQUIRY_FROM_EMAIL || "AVELUNE <onboarding@resend.dev>", to: [to], reply_to: email, subject: `New AVELUNE inquiry — ${name}`, text: fields.map(([label, value]) => `${label}: ${value}`).join("\n\n") }) });
+    const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" }, body: JSON.stringify({ from, to: [to], reply_to: email, subject: `New AVELUNE inquiry — ${name}`, text: fields.map(([label, value]) => `${label}: ${value}`).join("\n\n") }) });
     if (!response.ok) return NextResponse.json({ error: "We could not send your inquiry right now. Please try again or contact us directly by email." }, { status: 502 });
   } catch { return NextResponse.json({ error: "We could not send your inquiry right now. Please try again or contact us directly by email." }, { status: 502 }); }
   return NextResponse.json({ success: true });
