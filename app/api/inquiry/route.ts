@@ -42,6 +42,49 @@ function errorMessage(error: unknown) {
   return error instanceof Error && error.message ? error.message : "Unexpected server error.";
 }
 
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character];
+  });
+}
+
+function inquiryHtml(fields: Array<[string, string]>) {
+  const rows = fields
+    .map(
+      ([label, value]) => `
+        <tr>
+          <td style="padding:14px 0;border-bottom:1px solid #e7e0d6;color:#7d7468;font:11px/1.4 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;vertical-align:top;width:36%;">${escapeHtml(label)}</td>
+          <td style="padding:14px 0;border-bottom:1px solid #e7e0d6;color:#26231f;font:15px/1.6 Georgia,serif;vertical-align:top;word-break:break-word;">${escapeHtml(value).replace(/\n/g, "<br>")}</td>
+        </tr>`,
+    )
+    .join("");
+
+  return `<!doctype html>
+<html lang="en">
+  <body style="margin:0;padding:32px 16px;background:#f4f0e9;color:#26231f;">
+    <main style="max-width:680px;margin:0 auto;background:#fffdf9;border:1px solid #e7e0d6;">
+      <header style="padding:34px 40px 28px;border-bottom:1px solid #e7e0d6;">
+        <p style="margin:0 0 18px;color:#7d7468;font:11px/1.4 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;">New custom memorial inquiry</p>
+        <h1 style="margin:0;color:#26231f;font:400 30px/1.2 Georgia,serif;letter-spacing:-.02em;">AVELUNE</h1>
+      </header>
+      <section style="padding:18px 40px 40px;">
+        <table role="presentation" style="width:100%;border-collapse:collapse;">${rows}</table>
+      </section>
+      <footer style="padding:18px 40px;background:#f4f0e9;color:#7d7468;font:12px/1.5 Arial,sans-serif;">
+        A quiet place for their love to stay.
+      </footer>
+    </main>
+  </body>
+</html>`;
+}
+
 export async function POST(request: NextRequest) {
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.INQUIRY_TO_EMAIL;
@@ -113,15 +156,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const fields = [
+    const submittedAt = new Date().toISOString();
+    const fields: Array<[string, string]> = [
       ["Full name", name],
       ["Customer email", email],
       ["Country", country],
       ["Pet name", clean(payload.petName, 120) || "—"],
       ["Pet type", clean(payload.petType, 120) || "—"],
-      ["Personalization", clean(payload.personalisation, 200) || "—"],
+      ["Personalization request", clean(payload.personalisation, 200) || "—"],
       ["Message", message],
-      ["Submitted", new Date().toISOString()],
+      ["Submission time", submittedAt],
       ["Page URL", clean(payload.pageUrl, 500) || "—"],
     ];
 
@@ -137,8 +181,9 @@ export async function POST(request: NextRequest) {
           from,
           to: [to],
           reply_to: email,
-          subject: `New AVELUNE inquiry — ${name}`,
+          subject: "New Custom Memorial Inquiry | AVELUNE",
           text: fields.map(([label, value]) => `${label}: ${value}`).join("\n\n"),
+          html: inquiryHtml(fields),
         }),
       });
 
