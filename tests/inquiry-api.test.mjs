@@ -1,0 +1,18 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { readFile } from "node:fs/promises";
+
+const source = await readFile(new URL("../app/api/inquiry/route.ts", import.meta.url), "utf8");
+
+test("inquiry API has the required production safeguards", () => {
+  assert.match(source, /export async function POST/);
+  assert.match(source, /RESEND_API_KEY/);
+  assert.match(source, /INQUIRY_TO_EMAIL/);
+  assert.match(source, /reply_to: email/);
+  assert.match(source, /payload\.website/);
+  assert.match(source, /Date\.now\(\) - startedAt < 2500/);
+  assert.match(source, /status: 429/);
+  assert.match(source, /emailPattern\.test\(email\)/);
+  assert.match(source, /status: 405/);
+  assert.doesNotMatch(source, /console\.log/);
+});
