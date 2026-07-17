@@ -57,8 +57,10 @@ export function ContactForm() {
     return (
       <div className="form-success" role="status">
         <p className="eyebrow">Inquiry received</p>
-        <h2>Thank you.</h2>
-        <p>Thank you. Your inquiry has been received. We will reply by email as soon as possible.</p>
+        <h2>Thank you for sharing your story.</h2>
+        <p>We&apos;ve safely received your inquiry.</p>
+        <p>Our team will personally review your request and reply within 24 hours.</p>
+        <p>If your request includes a custom portrait, we&apos;ll guide you through the next step by email.</p>
       </div>
     );
   }
@@ -94,7 +96,6 @@ export function ContactForm() {
       <button className="button" type="submit" disabled={state === "sending"}>
         {state === "sending" ? "Sending inquiry…" : "Submit inquiry"} <span>↗</span>
       </button>
-      <p className="form-note">Or email us directly at <a href="mailto:hello@avelune.com">hello@avelune.com</a>.</p>
     </form>
   );
 }
