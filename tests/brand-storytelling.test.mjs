@@ -22,6 +22,8 @@ test("core pages use the approved AVELUNE keepsake language", async () => {
   assert.match(home, /Personalized wooden keepsakes, thoughtfully made to hold the memories that matter most\./);
   assert.match(home, /Worldwide enquiries welcome/);
   assert.match(product, /Final materials, dimensions, finishes, pricing and production details are confirmed before an order is accepted\./);
+  assert.match(product, /Approx\. 250 × 200 × 100 mm\./);
+  assert.match(product, /Final dimensions and production details will be confirmed before an order is accepted\./);
   assert.match(about, /AVELUNE was created from a simple belief/);
   assert.match(gallery, /Details made to feel personal, considered, and at home\./);
   assert.match(faq, /What happens after I submit the inquiry form\?/);
@@ -40,5 +42,5 @@ test("public storytelling pages do not publish retired product or contact claims
   ]);
   const combined = pages.join("\n");
 
-  assert.doesNotMatch(combined, /hello@avelune\.com|250 × 200 × 100 mm|Hidden magnetic closure/);
+  assert.doesNotMatch(combined, /hello@avelune\.com|Hidden magnetic closure/);
 });

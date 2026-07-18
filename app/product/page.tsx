@@ -31,12 +31,16 @@ export default function Product() {
 
     <section className="product-info wrap">
       <div><p className="eyebrow">Personalization options</p><h2>Meaningful details.<br/>Considered quietly.</h2></div>
-      <dl>
-        <div><dt>Portrait</dt><dd>Custom pet portrait prepared from your photograph.</dd></div>
-        <div><dt>Personalization</dt><dd>Name, meaningful dates and an optional short inscription.</dd></div>
-        <div><dt>Storage</dt><dd>A place for photographs, collars, tags, letters, small toys and other mementos.</dd></div>
-        <div><dt>Ordering</dt><dd>Each inquiry begins with your story and the details you would like to include.</dd></div>
-      </dl>
+      <div>
+        <dl>
+          <div><dt>Portrait</dt><dd>Custom pet portrait prepared from your photograph.</dd></div>
+          <div><dt>Personalization</dt><dd>Name, meaningful dates and an optional short inscription.</dd></div>
+          <div><dt>Storage</dt><dd>A place for photographs, collars, tags, letters, small toys and other mementos.</dd></div>
+          <div><dt>Dimensions</dt><dd>Approx. 250 × 200 × 100 mm.</dd></div>
+          <div><dt>Ordering</dt><dd>Each inquiry begins with your story and the details you would like to include.</dd></div>
+        </dl>
+        <p className="product-confirmation">Final dimensions and production details will be confirmed before an order is accepted.</p>
+      </div>
     </section>
 
     <section className="product-process wrap">
