@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Footer, Header, ProductPhoto } from "../components/chrome";
 
-export const metadata = { title: "Gallery — AVELUNE" };
+export const metadata: Metadata = {
+  title: "Gallery",
+  description: "Explore AVELUNE personalized wooden keepsakes, portrait details, interiors, and calm home settings.",
+  alternates: { canonical: "/gallery" },
+  openGraph: { title: "AVELUNE Gallery", description: "Details made to feel personal, considered, and at home.", url: "/gallery" },
+};
 
 const images = [
   ["/images/avelune/product-angle.jpg", "Portrait detail", "A close view of the personalized portrait and meaningful details."],

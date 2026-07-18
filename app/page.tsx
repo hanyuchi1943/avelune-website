@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Footer, Header, ProductPhoto } from "./components/chrome";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const details = [
   ["/images/avelune/hero-keepsake.jpg", "Closed box", "A calm, minimal form designed to live quietly at home."],

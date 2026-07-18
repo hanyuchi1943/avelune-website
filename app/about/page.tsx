@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Footer, Header, ProductPhoto } from "../components/chrome";
 
-export const metadata = { title: "About — AVELUNE" };
+export const metadata: Metadata = {
+  title: "About",
+  description: "Learn about AVELUNE’s quiet approach to personalized wooden pet memorial keepsakes for the home.",
+  alternates: { canonical: "/about" },
+  openGraph: { title: "About AVELUNE", description: "Quiet, personal keepsakes for the companions who remain part of home.", url: "/about" },
+};
 
 export default function About() {
   return <><Header/><main>

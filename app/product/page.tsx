@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Footer, Header, ProductPhoto } from "../components/chrome";
 
-export const metadata = { title: "Personalized Pet Keepsake Box — AVELUNE" };
+export const metadata: Metadata = {
+  title: "Personalized Pet Keepsake Box",
+  description: "A personalized beech wood pet memorial keepsake box for photographs, collars, handwritten notes, and meaningful details.",
+  alternates: { canonical: "/product" },
+  openGraph: { title: "Personalized Pet Keepsake Box", description: "A calm, personalized wooden keepsake for the details that matter most.", url: "/product" },
+};
 
 const gallery = [
   ["/images/avelune/hero-keepsake.jpg", "Closed wooden form"],
@@ -17,9 +23,9 @@ export default function Product() {
         <p className="eyebrow">The signature piece</p>
         <h1>Personalized Pet<br/>Keepsake Box</h1>
         <p>A refined wooden keepsake for the photographs, collars, notes and small mementos that keep a companion close.</p>
-        <Link className="button" href="/contact">Begin an Inquiry <span>↗</span></Link>
+        <Link className="button" href="/contact">Create Your Keepsake <span>↗</span></Link>
       </div>
-      <ProductPhoto className="product-art" src="/images/avelune/hero-keepsake.jpg" alt="Personalized AVELUNE wooden pet keepsake" priority/>
+      <ProductPhoto className="product-art" src="/images/avelune/hero-keepsake.jpg" alt="Personalized AVELUNE wooden pet keepsake box" priority/>
     </section>
 
     <section className="product-gallery wrap">{gallery.map(([src, label]) => <figure key={label}><ProductPhoto src={src} alt={`AVELUNE ${label.toLowerCase()}`}/><figcaption>{label}</figcaption></figure>)}</section>
@@ -30,16 +36,17 @@ export default function Product() {
     </section>
 
     <section className="product-info wrap">
-      <div><p className="eyebrow">Personalization options</p><h2>Meaningful details.<br/>Considered quietly.</h2></div>
+      <div><p className="eyebrow">Specifications</p><h2>Meaningful details.<br/>Considered quietly.</h2></div>
       <div>
         <dl>
-          <div><dt>Portrait</dt><dd>Custom pet portrait prepared from your photograph.</dd></div>
-          <div><dt>Personalization</dt><dd>Name, meaningful dates and an optional short inscription.</dd></div>
-          <div><dt>Storage</dt><dd>A place for photographs, collars, tags, letters, small toys and other mementos.</dd></div>
+          <div><dt>Material</dt><dd>Beech wood</dd></div>
           <div><dt>Dimensions</dt><dd>Approx. 250 × 200 × 100 mm.</dd></div>
-          <div><dt>Ordering</dt><dd>Each inquiry begins with your story and the details you would like to include.</dd></div>
+          <div><dt>Personalization</dt><dd>Pet portrait, name, dates, or a short memorial message</dd></div>
+          <div><dt>Interior</dt><dd>Soft black flocked lining</dd></div>
+          <div><dt>Purpose</dt><dd>Designed for photographs, collars, handwritten notes, and meaningful keepsakes</dd></div>
         </dl>
         <p className="product-confirmation">Final dimensions and production details will be confirmed before an order is accepted.</p>
+        <p className="product-confirmation">Final appearance and natural wood grain may vary slightly from piece to piece.</p>
       </div>
     </section>
 
@@ -51,7 +58,5 @@ export default function Product() {
         <article><span>03</span><h3>Confirm before ordering</h3><p>Final materials, dimensions, finishes, pricing and production details are confirmed before an order is accepted.</p></article>
       </div>
     </section>
-
-    <section className="closing wrap"><p className="eyebrow">Make it personal</p><h2>Begin with the story you want to keep.</h2><Link className="button" href="/contact">Create Your Keepsake <span>↗</span></Link></section>
   </main><Footer/></>;
 }
