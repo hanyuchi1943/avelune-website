@@ -48,16 +48,17 @@ test("public product imagery resolves to existing local assets", async () => {
   await Promise.all(imagePaths.map((path) => access(new URL(`public${path}`, root))));
 });
 
-test("gallery statically imports each temporary lifestyle image", async () => {
+test("gallery alternates real product photos with temporary editorial lifestyle images", async () => {
   const gallery = await source("app/gallery/page.tsx");
 
   assert.doesNotMatch(gallery, /Gallery Image Diagnostic/);
   assert.match(gallery, /<section className="gallery wrap">/);
-  for (const image of ["gallery-fireplace.jpg", "gallery-flowers.jpg", "gallery-bookshelf.jpg"]) {
+  for (const image of ["fallback-front.jpg", "fallback-engraving.jpg", "fallback-interior.jpg", "gallery-fireplace.jpg", "gallery-flowers.jpg", "gallery-bookshelf.jpg"]) {
     assert.match(gallery, new RegExp(`import .+ from ".+${image}"`));
     await access(new URL(`public/images/avelune/${image}`, root));
   }
   for (const retiredImage of ["product-angle.jpg", "hero-keepsake.jpg", "product-open-dark.jpg", "product-open-light.jpg", "gallery-window.jpg"]) {
     assert.doesNotMatch(gallery, new RegExp(retiredImage));
   }
+  assert.match(gallery, /realFrontImage,[\s\S]*fireplaceImage,[\s\S]*realEngravingImage,[\s\S]*flowersImage,[\s\S]*realInteriorImage,[\s\S]*bookshelfImage/);
 });
