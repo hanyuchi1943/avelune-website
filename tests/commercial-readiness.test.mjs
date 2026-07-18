@@ -51,11 +51,13 @@ test("public product imagery resolves to existing local assets", async () => {
 test("gallery statically imports each temporary lifestyle image", async () => {
   const gallery = await source("app/gallery/page.tsx");
 
-  assert.match(gallery, /Gallery Image Diagnostic/);
-  assert.match(gallery, /width=\{src\.width\}/);
-  assert.match(gallery, /height=\{src\.height\}/);
+  assert.doesNotMatch(gallery, /Gallery Image Diagnostic/);
+  assert.match(gallery, /<section className="gallery wrap">/);
   for (const image of ["gallery-fireplace.jpg", "gallery-flowers.jpg", "gallery-bookshelf.jpg"]) {
     assert.match(gallery, new RegExp(`import .+ from ".+${image}"`));
     await access(new URL(`public/images/avelune/${image}`, root));
+  }
+  for (const retiredImage of ["product-angle.jpg", "hero-keepsake.jpg", "product-open-dark.jpg", "product-open-light.jpg", "gallery-window.jpg"]) {
+    assert.doesNotMatch(gallery, new RegExp(retiredImage));
   }
 });
