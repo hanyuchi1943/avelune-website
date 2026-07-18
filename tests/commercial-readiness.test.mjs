@@ -47,3 +47,12 @@ test("public product imagery resolves to existing local assets", async () => {
   assert.ok(imagePaths.length > 0);
   await Promise.all(imagePaths.map((path) => access(new URL(`public${path}`, root))));
 });
+
+test("gallery statically imports each temporary lifestyle image", async () => {
+  const gallery = await source("app/gallery/page.tsx");
+
+  for (const image of ["gallery-fireplace.jpg", "gallery-flowers.jpg", "gallery-bookshelf.jpg"]) {
+    assert.match(gallery, new RegExp(`import .+ from ".+${image}"`));
+    await access(new URL(`public/images/avelune/${image}`, root));
+  }
+});
