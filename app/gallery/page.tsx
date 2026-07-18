@@ -9,14 +9,9 @@ export const metadata: Metadata = {
 };
 
 const images = [
-  ["/images/avelune/product-angle.jpg", "Portrait detail", "A close view of the personalized portrait and meaningful details."],
-  ["/images/avelune/hero-keepsake.jpg", "Personalization", "A keepsake made individual to one companion."],
-  ["/images/avelune/product-open-dark.jpg", "Interior and storage", "A quiet place for the objects that hold a story."],
   ["/images/avelune/gallery-fireplace.jpg", "Home setting", "An understated presence within a familiar room."],
-  ["/images/avelune/product-open-light.jpg", "Materials and finish", "Wooden form and considered interior detail."],
   ["/images/avelune/gallery-flowers.jpg", "Gifting", "A thoughtful gesture, prepared with care."],
   ["/images/avelune/gallery-bookshelf.jpg", "Home setting", "Made to live naturally among the things you love."],
-  ["/images/avelune/gallery-window.jpg", "Materials and finish", "Light moving softly across the wooden surface."],
 ] as const;
 
 export default function Gallery() {
