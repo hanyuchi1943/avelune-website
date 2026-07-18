@@ -17,17 +17,15 @@ const trustPoints = [
 
 export default function Home() {
   return <><Header/><main>
-    <section className="hero">
-      <ProductPhoto className="hero-art" src="/images/avelune/hero-keepsake.jpg" alt="Personalized AVELUNE wooden pet keepsake" priority/>
+    <section className="hero hero-editorial wrap">
       <div className="hero-copy">
         <p className="eyebrow">Personalized pet keepsakes</p>
         <h1>A quiet place for<br/>their love to stay.</h1>
-        <p>Personalized wooden keepsakes, thoughtfully made to hold the memories that matter most.</p>
-        <div className="hero-actions">
-          <Link className="button light" href="/contact">Create Your Keepsake <span>↗</span></Link>
-          <Link className="text-action" href="/about">Discover AVELUNE <span>→</span></Link>
-        </div>
+        {/* Previous approved supporting copy: Personalized wooden keepsakes, thoughtfully made to hold the memories that matter most. */}
+        <p>Personalized wooden keepsakes created to preserve photographs, collars, handwritten notes and the memories that remain closest to us.</p>
+        <Link className="button" href="/contact">Create Your Keepsake <span>↗</span></Link>
       </div>
+      <div className="hero-product"><ProductPhoto src="/images/avelune/hero-keepsake.jpg" alt="Complete AVELUNE wooden keepsake box" priority/></div>
     </section>
 
     <section className="intro wrap">
