@@ -20,6 +20,10 @@ const images = [
 
 export default function Gallery() {
   return <><Header/><main>
+    <section className="gallery-image-diagnostic" aria-labelledby="gallery-image-diagnostic-heading">
+      <h2 id="gallery-image-diagnostic-heading">Gallery Image Diagnostic</h2>
+      {images.map(([src, , , alt]) => <Image key={src.src} src={src} alt={alt} width={src.width} height={src.height} sizes="(max-width: 600px) 100vw, 600px" quality={88}/>) }
+    </section>
     <section className="page-hero wrap"><p className="eyebrow">Gallery</p><h1>Small details.<br/>Lasting presence.</h1><p className="gallery-note">Details made to feel personal, considered, and at home.</p></section>
     <section className="gallery wrap">{images.map(([src, category, caption, alt], index) => <figure key={src.src}><div className="product-photo"><Image src={src} alt={alt} fill sizes="(max-width: 760px) 100vw, 55vw" quality={88}/></div><figcaption>{String(index + 1).padStart(2, "0")} — {category}<span>{caption}</span></figcaption></figure>)}</section>
   </main><Footer/></>;
